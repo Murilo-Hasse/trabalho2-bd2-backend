@@ -3,3 +3,5 @@ __pycache__/
 
 *.env
 tempCodeRunnerFile.py
+
+*.sqlite3

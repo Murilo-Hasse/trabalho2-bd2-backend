@@ -21,3 +21,4 @@ class HelloName(Resource):
             abort(HttpStatusCode.BAD_REQUEST, message="Vai tomar no cu")
             
         return args, HttpStatusCode.CREATED
+

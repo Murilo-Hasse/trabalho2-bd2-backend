@@ -2,6 +2,8 @@ from flask_restful import Resource, Api, abort
 from flask_restful.reqparse import RequestParser, Namespace
 import http_status as HttpStatusCode
 import serializers
+import models
+from pony.orm import db_session, select
 
 # adicionar as classes de views aqui
 

@@ -40,6 +40,7 @@ class PessoaContato(db.Entity):
     codigo = PrimaryKey(int, auto=True)
     pessoa = Required(Pessoa)
     tipo = Required(TipoContato)
+    valor = Required(str, max_len=127)
 
 
 class FormaDePagamento(db.Entity):
@@ -59,6 +60,7 @@ class Produto(db.Entity):
     descricao = Required(str, max_len=255)
     valor = Required(Decimal, precision=10, scale=2)
     quantidade = Required(int)
+    imagem = Optional(str, max_len=1023)
     fornecedor = Required(Pessoa)
     grupo = Required(Grupo)
     itens = Set('Item')

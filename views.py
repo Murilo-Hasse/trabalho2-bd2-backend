@@ -7,7 +7,7 @@ from pony.orm import db_session, select, desc
 
 # adicionar as classes de views aqui
 
-class HelloWorld(Resource):
+class Funcoes(Resource):
     def get(self):
         with db_session:
             funcoes = select(func for func in models.Funcao)[:]
@@ -22,6 +22,7 @@ class HelloWorld(Resource):
             
         return funcs
     
+    
     def post(self):
         args: dict = serializers.funcao_serializer.parse_args().copy()
         with db_session:
@@ -32,18 +33,5 @@ class HelloWorld(Resource):
         return {
                     'id': query.codigo,
                     'descricao': query.descricao
-                }
-    
-
-class HelloName(Resource):
-    def get(self, name: str):
-        return {'data': f'Hello, {name.capitalize()}'}
-    
-    def post(self, name: str):
-        args: dict = serializers.task_request_parser.parse_args().copy()
-        
-        if args['name'].lower() == 'matheus augusto':
-            abort(HttpStatusCode.BAD_REQUEST, message="Vai tomar no cu")
-            
-        return args, HttpStatusCode.CREATED
+                }, HttpStatusCode.CREATED
 

@@ -5,8 +5,7 @@ import views
 app: Flask = Flask(__file__)
 api: Api =  Api(app)
 
-api.add_resource(views.HelloWorld, '/helloworld/')
-api.add_resource(views.HelloName, '/helloname/<string:name>/')
+api.add_resource(views.Funcoes, '/funcoes/')
 
 if __name__ == '__main__':
     app.run(debug=True)

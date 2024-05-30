@@ -1,11 +1,29 @@
 from flask_restful import Resource, Api, abort
 from flask_restful.reqparse import RequestParser, Namespace
-import http_status as HttpStatusCode
 import serializers
 import models
 from pony.orm import db_session, select, desc
+from http import HTTPStatus
+import dicts
+import validators
 
 # adicionar as classes de views aqui
+
+class Endereco(Resource):
+    def post(self):
+        with db_session:
+            endereco: dicts.Endereco = serializers.endereco_serializer.parse_args().copy()
+            
+            validators.EnderecoValidator(endereco)
+            
+            endereco['logradouro'] = endereco['logradouro'].capitalize()
+            endereco['bairro'] = endereco['bairro'].capitalize()
+            models.Endereco(**endereco)
+
+            query = select(max(e.codigo,) for e in models.Endereco).first()
+        
+        endereco['codigo'] = query
+        return endereco, HTTPStatus.CREATED
 
 class Funcoes(Resource):
     def get(self):
@@ -33,5 +51,5 @@ class Funcoes(Resource):
         return {
                     'id': query.codigo,
                     'descricao': query.descricao
-                }, HttpStatusCode.CREATED
+                }, HTTPStatus.CREATED
 

@@ -12,7 +12,7 @@ if __name__ == '__main__':
     files = [str(file) for file in INSERTS_FOLDER.iterdir() if str(file).endswith('.sql')]
     
     for file in files:
-        with open(file, 'r') as file:
+        with open(file, 'r', encoding='utf-8') as file:
             content = file.readlines()
             for line in content:
                 cursor.execute(line)

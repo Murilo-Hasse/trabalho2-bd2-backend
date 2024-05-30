@@ -11,6 +11,7 @@ NUMERO_FUNCOES = 3
 NUMERO_GRUPOS = 6
 NUMERO_TIPOS_CONTATOS = 3
 FORMAS_PAGAMENTO = 4
+NUMERO_ENDERECOS = 153
 
 def save_to_file(file_path: str):
     def wrapper(func: Callable[[int], str]):

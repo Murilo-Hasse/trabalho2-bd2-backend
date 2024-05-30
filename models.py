@@ -85,12 +85,13 @@ set_sql_debug(True)
 db.bind(provider='sqlite', filename='db.sqlite3')
 db.generate_mapping(create_tables=True)
 
-@db_session 
-def criar_funcao(nome_funcao: str) -> None:
-    Funcao(descricao=nome_funcao)
+if __name__ == '__main__':
+    @db_session 
+    def criar_funcao(nome_funcao: str) -> None:
+        Funcao(descricao=nome_funcao)
 
-criar_funcao('Gerente')
-    
-with db_session:
-    query = select(func for func in Funcao)[:]
-    print(query[0].codigo, query[0].descricao)
+    criar_funcao('Gerente')
+        
+    with db_session:
+        query = select(func for func in Funcao)[:] # type: ignore
+        print(query[0].codigo, query[0].descricao)

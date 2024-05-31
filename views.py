@@ -1,8 +1,7 @@
-from flask_restful import Resource, Api, abort
-from flask_restful.reqparse import RequestParser, Namespace
+from flask_restful import Resource
 import serializers
 import models
-from pony.orm import db_session, select, desc
+from pony.orm import db_session, select
 from http import HTTPStatus
 import dicts
 import validators
@@ -13,6 +12,8 @@ class Endereco(Resource):
     def post(self):
         with db_session:
             endereco: dicts.Endereco = serializers.endereco_serializer.parse_args().copy()
+            
+            endereco['cep'] = endereco['cep'].replace('-', '')
             
             validators.EnderecoValidator(endereco)
             
@@ -25,31 +26,49 @@ class Endereco(Resource):
         endereco['codigo'] = query
         return endereco, HTTPStatus.CREATED
 
-class Funcoes(Resource):
+#GET E POST
+class ProdutoList(Resource):
     def get(self):
         with db_session:
-            funcoes = select(func for func in models.Funcao)[:]
-            funcs = list()
-            for func in funcoes:
-                funcs.append(
-                    {
-                        'id': func.codigo,
-                        'descricao': func.descricao
-                    }
-                )
+            query = select((produto.codigo, 
+                            produto.valor, 
+                            produto.quantidade, 
+                            produto.imagem, 
+                            produto.fornecedor.nome, 
+                            produto.grupo.descricao) 
+                           for produto in models.Produto)[:]
             
-        return funcs
-    
+            products = list()
+            for product in query:
+                prod = {
+                    'codigo': product[0],
+                    'valor': float(product[1]),
+                    'quantidade': product[2],
+                    'imagem': product[3],
+                    'fornecedor': product[4],
+                    'grupo': product[5],
+                }
+                products.append(prod)
+            
+            return products, HTTPStatus.OK
     
     def post(self):
-        args: dict = serializers.funcao_serializer.parse_args().copy()
-        with db_session:
-            models.Funcao(descricao=args['descricao'])
-            
-            query = select(func for func in models.Funcao).order_by(desc(models.Funcao.codigo))[:1][0]
+        args: dicts.ProdutoList = serializers.produto_post_serializer.parse_args().copy()
         
-        return {
-                    'id': query.codigo,
-                    'descricao': query.descricao
-                }, HTTPStatus.CREATED
+        if args['imagem'] == None:
+            args['imagem'] = ''
+            
+        validators.ProdutoValidator(args)    
+        
+        with db_session:
+            models.Produto(**args)
+            codigo = select(max(produto.codigo) for produto in models.Produto).first()
+        args['codigo'] = codigo
+        
+        return args, HTTPStatus.CREATED
+        
+#GET, PATCH, DELETE
+class Produtos(Resource):
+    def get(self):
+        with db_session: ...
 

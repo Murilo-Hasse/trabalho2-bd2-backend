@@ -141,4 +141,5 @@ class FormaPagamentoList(Resource):
                 formas.append(form)
             
             return formas
+
                              

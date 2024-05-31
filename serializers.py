@@ -15,3 +15,11 @@ produto_post_serializer.add_argument('quantidade', type=int, help='Quantidade do
 produto_post_serializer.add_argument('imagem', type=str, help='A imagem não está em base64', required=False, default=None)
 produto_post_serializer.add_argument('fornecedor', type=int, help='Fornecedor não informado/não é válido', required=True)
 produto_post_serializer.add_argument('grupo', type=int, help='Grupo não informado/não é válido', required=True)
+
+produto_patch_serializer: RequestParser = RequestParser()
+produto_post_serializer.add_argument('descricao', type=str)
+produto_post_serializer.add_argument('valor', type=float)
+produto_post_serializer.add_argument('quantidade', type=int)
+produto_post_serializer.add_argument('imagem', type=str)
+produto_post_serializer.add_argument('fornecedor', type=int)
+produto_post_serializer.add_argument('grupo', type=int)

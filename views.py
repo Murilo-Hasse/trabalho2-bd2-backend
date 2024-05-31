@@ -25,6 +25,21 @@ class Endereco(Resource):
         
         endereco['codigo'] = query
         return endereco, HTTPStatus.CREATED
+    
+
+class GrupoList(Resource):
+    def get(self):
+        with db_session:
+            query = select((grupo.codigo, grupo.descricao) for grupo in models.Grupo)[:]
+            grupos = list()
+            for grupo in query:
+                grupo = {
+                    'codigo': grupo[0],
+                    'descricao': grupo[1]
+                }
+                grupos.append(grupo)
+            
+            return grupos
 
 #GET E POST
 class ProdutoList(Resource):
@@ -53,7 +68,7 @@ class ProdutoList(Resource):
             return products, HTTPStatus.OK
     
     def post(self):
-        args: dicts.ProdutoList = serializers.produto_post_serializer.parse_args().copy()
+        args: dicts.Produto = serializers.produto_post_serializer.parse_args().copy()
         
         if args['imagem'] == None:
             args['imagem'] = ''
@@ -80,8 +95,7 @@ class Produtos(Resource):
                              for produto in models.Produto if produto.codigo == produto_id).first()
             
             
-            if not produto:
-                abort(HTTPStatus.NOT_FOUND)
+            abort(HTTPStatus.NOT_FOUND) if not produto else None
                 
             prod = {
                     'codigo': produto[0],
@@ -95,14 +109,19 @@ class Produtos(Resource):
             return prod, HTTPStatus.OK
             
     
-    def patch(self, produto_id): ...
+    # def patch(self, produto_id): 
+    #     args: dicts.Produto = serializers.produto_patch_serializer.parse_args().copy()
+    #     with db_session:
+    #         produto = select(produto for produto in models.Produto if produto.codigo == produto_id).first()
+    #         abort(HTTPStatus.NOT_FOUND) if not produto else None
+            
+    #         print(args)
     
     def delete(self, produto_id):
         with db_session:
             produto = select(produto for produto in models.Produto if produto.codigo == produto_id).first()
             
-            if not produto:
-                abort(HTTPStatus.NOT_FOUND)
+            abort(HTTPStatus.NOT_FOUND) if not produto else None
             
             produto.delete()
             

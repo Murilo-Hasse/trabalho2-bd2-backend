@@ -25,7 +25,7 @@ class EnderecoValidator(Validator):
             
 
 class ProdutoValidator(Validator):
-    def validate(self, obj: dicts.ProdutoList):
+    def validate(self, obj: dicts.Produto):
         self.validate_name(obj["descricao"])
         self.validate_number(obj["quantidade"], "quantidade")
         self.validate_number(obj["valor"], "preço")

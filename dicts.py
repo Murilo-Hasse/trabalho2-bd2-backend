@@ -9,12 +9,12 @@ class Endereco(TypedDict):
     codigo: None | int
     
 
-class ProdutoList(TypedDict):
+class Produto(TypedDict):
     codigo: None | int
-    descricao: str
-    valor: float
-    quantidade: int
+    descricao: None | str
+    valor: None | float
+    quantidade: None | int
     imagem: None | str
-    fornecedor: str
-    grupo: str
+    fornecedor: None | str
+    grupo: None | str
     

@@ -126,4 +126,19 @@ class Produtos(Resource):
             produto.delete()
             
             return '', HTTPStatus.OK
+        
+
+class FormaPagamentoList(Resource):
+    def get(self):
+        with db_session:
+            query = select((forma.codigo, forma.descricao) for forma in models.FormaDePagamento)[:]
+            formas = list()
+            for forma in query:
+                form = {
+                    'codigo': forma[0],
+                    'descricao': forma[1]
+                }
+                formas.append(form)
+            
+            return formas
                              

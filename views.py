@@ -1,4 +1,4 @@
-from flask_restful import Resource
+from flask_restful import Resource, abort
 import serializers
 import models
 from pony.orm import db_session, select
@@ -69,6 +69,42 @@ class ProdutoList(Resource):
         
 #GET, PATCH, DELETE
 class Produtos(Resource):
-    def get(self):
-        with db_session: ...
-
+    def get(self, produto_id):
+        with db_session:
+            produto = select((produto.codigo, 
+                            produto.valor, 
+                            produto.quantidade, 
+                            produto.imagem, 
+                            produto.fornecedor.nome, 
+                            produto.grupo.descricao) 
+                             for produto in models.Produto if produto.codigo == produto_id).first()
+            
+            
+            if not produto:
+                abort(HTTPStatus.NOT_FOUND)
+                
+            prod = {
+                    'codigo': produto[0],
+                    'valor': float(produto[1]),
+                    'quantidade': produto[2],
+                    'imagem': produto[3],
+                    'fornecedor': produto[4],
+                    'grupo': produto[5],
+                }
+            
+            return prod, HTTPStatus.OK
+            
+    
+    def patch(self, produto_id): ...
+    
+    def delete(self, produto_id):
+        with db_session:
+            produto = select(produto for produto in models.Produto if produto.codigo == produto_id).first()
+            
+            if not produto:
+                abort(HTTPStatus.NOT_FOUND)
+            
+            produto.delete()
+            
+            return '', HTTPStatus.OK
+                             

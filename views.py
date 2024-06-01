@@ -5,6 +5,7 @@ from pony.orm import db_session, select
 from http import HTTPStatus
 import dicts
 import validators
+import utils
 
 # adicionar as classes de views aqui
 
@@ -72,8 +73,16 @@ class ProdutoList(Resource):
         
         if args['imagem'] == None:
             args['imagem'] = ''
+        
+        if len(args['imagem']) >= 1:
+            b64_img_str = args['imagem']
+            args['extensao_imagem'] = args['extensao_imagem'].replace('.', ''.lower())
+            img_link = utils.decode_and_upload_to_dropbox(b64_img_str, args['descricao'], args['extensao_imagem'])
+            del args['extensao_imagem']
             
-        validators.ProdutoValidator(args)    
+            args['imagem'] = img_link
+            
+        validators.ProdutoValidator(args)
         
         with db_session:
             models.Produto(**args)

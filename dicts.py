@@ -17,4 +17,5 @@ class Produto(TypedDict):
     imagem: None | str
     fornecedor: None | str
     grupo: None | str
+    extensao_imagem: None | str
     

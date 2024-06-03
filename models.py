@@ -95,5 +95,5 @@ if __name__ == '__main__':
     criar_funcao('Gerente')
         
     with db_session:
-        query = select(func for func in Funcao)[:] # type: ignore
+        query = Funcao.select(lambda func: func)[:]
         print(query[0].codigo, query[0].descricao)

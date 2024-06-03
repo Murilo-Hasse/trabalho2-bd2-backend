@@ -1,11 +1,13 @@
 from flask_restful import Resource, abort
 import serializers
 import models
+from typing import Any
 from pony.orm import db_session, select
 from http import HTTPStatus
 import dicts
 import validators
 import utils
+import mixins
 
 # adicionar as classes de views aqui
 
@@ -28,45 +30,12 @@ class Endereco(Resource):
         return endereco, HTTPStatus.CREATED
     
 
-class GrupoList(Resource):
-    def get(self):
-        with db_session:
-            query = select((grupo.codigo, grupo.descricao) for grupo in models.Grupo)[:]
-            grupos = list()
-            for grupo in query:
-                grupo = {
-                    'codigo': grupo[0],
-                    'descricao': grupo[1]
-                }
-                grupos.append(grupo)
-            
-            return grupos
+class GrupoList(Resource, mixins.ListMixin):
+    query = models.Grupo.select()
 
 #GET E POST
-class ProdutoList(Resource):
-    def get(self):
-        with db_session:
-            query = select((produto.codigo, 
-                            produto.valor, 
-                            produto.quantidade, 
-                            produto.imagem, 
-                            produto.fornecedor.nome, 
-                            produto.grupo.descricao) 
-                           for produto in models.Produto)[:]
-            
-            products = list()
-            for product in query:
-                prod = {
-                    'codigo': product[0],
-                    'valor': float(product[1]),
-                    'quantidade': product[2],
-                    'imagem': product[3],
-                    'fornecedor': product[4],
-                    'grupo': product[5],
-                }
-                products.append(prod)
-            
-            return products, HTTPStatus.OK
+class ProdutoList(Resource, mixins.ListMixin):
+    query = models.Produto.select(lambda p: (p.codigo, p.valor, p.quantidade, p.imagem, p.fornecedor.nome, p.grupo.descricao))
     
     def post(self):
         args: dicts.Produto = serializers.produto_post_serializer.parse_args().copy()
@@ -137,18 +106,6 @@ class Produtos(Resource):
             return '', HTTPStatus.OK
         
 
-class FormaPagamentoList(Resource):
-    def get(self):
-        with db_session:
-            query = select((forma.codigo, forma.descricao) for forma in models.FormaDePagamento)[:]
-            formas = list()
-            for forma in query:
-                form = {
-                    'codigo': forma[0],
-                    'descricao': forma[1]
-                }
-                formas.append(form)
-            
-            return formas
-
+class FormaPagamentoList(Resource, mixins.ListMixin):
+    query = models.FormaDePagamento.select()
                              

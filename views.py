@@ -35,7 +35,8 @@ class GrupoList(Resource, mixins.ListMixin):
 
 #GET E POST
 class ProdutoList(Resource, mixins.ListMixin):
-    query = models.Produto.select(lambda p: (p.codigo, p.valor, p.quantidade, p.imagem, p.fornecedor.nome, p.grupo.descricao))
+    query = select((p.codigo, p.descricao, p.valor, p.quantidade, p.imagem, p.fornecedor.nome, p.grupo.descricao) for p in models.Produto)
+    dict = dicts.Produto
     
     def post(self):
         args: dicts.Produto = serializers.produto_post_serializer.parse_args().copy()

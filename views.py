@@ -11,7 +11,9 @@ import mixins
 
 # adicionar as classes de views aqui
 
-class Endereco(Resource):
+class Endereco(Resource, mixins.CreateMixin):
+    model = models.Endereco
+    
     def post(self):
         with db_session:
             endereco: dicts.Endereco = serializers.endereco_serializer.parse_args().copy()
@@ -22,12 +24,8 @@ class Endereco(Resource):
             
             endereco['logradouro'] = endereco['logradouro'].capitalize()
             endereco['bairro'] = endereco['bairro'].capitalize()
-            models.Endereco(**endereco)
-
-            query = select(max(e.codigo,) for e in models.Endereco).first()
-        
-        endereco['codigo'] = query
-        return endereco, HTTPStatus.CREATED
+            
+        return super().post(**endereco)
     
 
 class GrupoList(Resource, mixins.ListMixin):

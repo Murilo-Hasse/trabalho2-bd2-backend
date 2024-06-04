@@ -3,7 +3,7 @@ from flask_restful import Api
 import views
 
 app: Flask = Flask(__file__)
-api: Api =  Api(app)
+api: Api = Api(app)
 
 api.add_resource(views.Endereco, '/endereco/')
 

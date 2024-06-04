@@ -1,8 +1,9 @@
-from pony.orm import Database, Required, Optional, Set, PrimaryKey, set_sql_debug, db_session, select
+from pony.orm import Database, Required, Optional, Set, PrimaryKey, set_sql_debug, db_session
 from decimal import Decimal
 from datetime import datetime
 
 db = Database()
+
 
 class Funcao(db.Entity):
     codigo = PrimaryKey(int, auto=True)
@@ -47,7 +48,7 @@ class FormaDePagamento(db.Entity):
     codigo = PrimaryKey(int, auto=True)
     descricao = Required(str, max_len=63)
     vendas = Set('Venda')
-    
+
 
 class Grupo(db.Entity):
     codigo = PrimaryKey(int, auto=True)
@@ -88,12 +89,12 @@ db.bind(provider='sqlite', filename='db.sqlite3')
 db.generate_mapping(create_tables=True)
 
 if __name__ == '__main__':
-    @db_session 
+    @db_session
     def criar_funcao(nome_funcao: str) -> None:
         Funcao(descricao=nome_funcao)
 
     criar_funcao('Gerente')
-        
+
     with db_session:
         query = Funcao.select(lambda func: func)[:]
         print(query[0].codigo, query[0].descricao)

@@ -2,6 +2,10 @@ from flask_restful.reqparse import RequestParser
 
 # adicionar os serializers aqui
 
+login_serializer: RequestParser = RequestParser()
+login_serializer.add_argument('user', type=str, help='Usuário não preenchido', required=True)
+login_serializer.add_argument('password', type=str, help='Senha não preenchida', required=True)
+
 endereco_serializer: RequestParser = RequestParser()
 endereco_serializer.add_argument('logradouro', type=str, help='Endereço não preenchido', required=True)
 endereco_serializer.add_argument('numero', type=int, help='Número não preenchido/não é um número válido', required=True)

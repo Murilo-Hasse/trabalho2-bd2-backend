@@ -17,7 +17,7 @@ class Login(Resource):
         args: dict = serializers.login_serializer.parse_args().copy()
         
         try:
-            PostgresConnection(user=args['user'], password=args['password'])
+            PostgresConnection(**args)
         except WrongPasswordError as error:
             return abort(HTTPStatus.BAD_REQUEST, message=error.args)
         

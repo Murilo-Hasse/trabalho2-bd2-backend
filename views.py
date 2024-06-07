@@ -8,7 +8,6 @@ import models
 from http import HTTPStatus
 import validators
 import utils
-import mixins
 
 # adicionar as classes de views aqui
 
@@ -20,5 +19,9 @@ class Login(Resource):
             PostgresConnection(**args)
         except WrongPasswordError as error:
             return abort(HTTPStatus.BAD_REQUEST, message=error.args)
+
+        del args['password']
+
+        return args
         
         

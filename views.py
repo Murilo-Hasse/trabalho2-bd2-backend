@@ -4,9 +4,7 @@ from utils import PostgresConnection
 from exceptions import WrongPasswordError
 import json
 import serializers
-import models
 from http import HTTPStatus
-import validators
 import utils
 
 # adicionar as classes de views aqui

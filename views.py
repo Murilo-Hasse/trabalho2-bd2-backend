@@ -1,11 +1,11 @@
 from flask_restful import Resource, abort
+from flask import request
 from utils import PostgresConnection
 from exceptions import WrongPasswordError
 import json
 import serializers
 import models
 from http import HTTPStatus
-import dicts
 import validators
 import utils
 import mixins

@@ -14,5 +14,10 @@ api.add_resource(views.Login, '/login/')
 #api.add_resource(views.GrupoList, '/grupos/')
 #api.add_resource(views.FormaPagamentoList, '/formaspagamento/')
 
+connection = PostgresConnection(user='postgres', password='postgres')
+connection1 = PostgresConnection(user='postgres')
+
+print(connection is connection1)
+
 if __name__ == '__main__':
     app.run(debug=True)

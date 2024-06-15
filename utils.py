@@ -6,7 +6,6 @@ import base64
 import os
 from os import getenv
 from typing import Any
-from decimal import Decimal
 import psycopg2
 
 
@@ -26,7 +25,7 @@ class PostgresConnection:
         if self.__port is None:
             self.__port = '5432'
 
-        self.__credentials = {
+        credentials = {
             'host': self.__host,
             'database': self.__database,
             'user': self.__user,
@@ -34,7 +33,7 @@ class PostgresConnection:
             'port': self.__port
         }
         try:
-            self.__connection = psycopg2.connect(**self.__credentials)
+            self.__connection = psycopg2.connect(**credentials)
         except OperationalError:
             raise WrongPasswordError(
                 f"Senha incorreta para o usuário '{self.__user}'")
@@ -42,10 +41,10 @@ class PostgresConnection:
         self.__cursor = self.__connection.cursor()
 
     def __del__(self):
-        self.__cursor.close() if hasattr(PostgresConnection, '__cursor') else None
         if hasattr(PostgresConnection, '__connection'):
             self.__connection.commit()
             self.__connection.close()
+            self.__cursor.close()
 
     def execute(self, sql_command: str, *args) -> None:
         self.__cursor.execute(sql_command, *args)
@@ -96,23 +95,14 @@ def upload_image_to_dropbox(img_path: str, img_name: str) -> str:
     return shared_link_metadata.url.replace("www.dropbox.com", "dl.dropboxusercontent.com")
 
 
-def decode_b64_to_img(b64_str: str, nome_arquivo: str, extensao_img: str) -> None:
-    image_bytes = base64.b64decode(b64_str)
+def decode_and_upload_to_dropbox(b64_img_str: str, img_name: str, img_extension: str) -> str:
+    image_bytes = base64.b64decode(b64_img_str)
 
-    with open(f"""img/{nome_arquivo}.{extensao_img}""", 'wb') as file:
+    with open(f"""img/{img_name}.{img_extension}""", 'wb') as file:
         file.write(image_bytes)
 
-
-def decode_and_upload_to_dropbox(b64_img_str: str, img_name: str, img_extension: str) -> str:
-    decode_b64_to_img(b64_img_str, img_name, img_extension)
     url = upload_image_to_dropbox(
-        f'img/{img_name}.{img_extension}', f'{img_name}.{img_extension}')
+        f'img/{img_name}.{img_extension}', f'{img_name}.{img_extension}'
+    )
 
     return url
-
-
-if __name__ == "__main__":
-    with open('img/img_b64.txt') as file:
-        b64_img = file.read()
-
-    print(decode_and_upload_to_dropbox(b64_img, 'ryzen', 'jpeg'))

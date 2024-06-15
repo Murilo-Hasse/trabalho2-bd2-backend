@@ -1,9 +1,0 @@
-LICENSE
-__pycache__
-.env
-.vscode
-inserts
-.gitignore
-venv
-db.sqlite3
-seguranca

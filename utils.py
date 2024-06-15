@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 from psycopg2 import OperationalError
-from exceptions import WrongPasswordError
 from decorators import singleton
 import dropbox
 import base64
@@ -10,8 +9,12 @@ from typing import Any
 import psycopg2
 
 
+class WrongPasswordError(Exception):
+    ...
+
+
 class PostgresConnection:
-    def __init__(self, user: str | None=None, password: str | None=None) -> None:
+    def __init__(self, user: str | None = None, password: str | None = None) -> None:
         load_dotenv()
         self.__host: str | None = getenv('HOST')
         self.__database: str | None = getenv('DATABASE')
@@ -32,8 +35,9 @@ class PostgresConnection:
         try:
             self.__connection = psycopg2.connect(**self.__credentials)
         except OperationalError:
-            raise WrongPasswordError(f"Senha incorreta para o usuário '{self.__user}'")
-            
+            raise WrongPasswordError(
+                f"Senha incorreta para o usuário '{self.__user}'")
+
         self.__cursor = self.__connection.cursor()
 
     def __del__(self):
@@ -47,19 +51,19 @@ class PostgresConnection:
 
     def commit(self) -> None:
         self.__connection.commit()
-    
+
     def retrieve_from_query(self, query: str) -> list[dict[str, Any]]:
         self.__cursor.execute(query)
-        
+
         columns = [desc[0] for desc in self.__cursor.description]
         values = self.__cursor.fetchall()
+
         result = []
         for value in values:
             row = dict(zip(columns, value))
             result.append(row)
-        
+
         return result
-        
 
 
 def upload_image_to_dropbox(img_path: str, img_name: str) -> str:
@@ -76,7 +80,8 @@ def upload_image_to_dropbox(img_path: str, img_name: str) -> str:
     with open(img_path, 'rb') as file:
         dbx.files_upload(file.read(), ABSOLUTE_PATH)
 
-    shared_link_metadata = dbx.sharing_create_shared_link_with_settings(ABSOLUTE_PATH)
+    shared_link_metadata = dbx.sharing_create_shared_link_with_settings(
+        ABSOLUTE_PATH)
 
     # transforma o link do dropbox em um link de imagem em si
     return shared_link_metadata.url.replace("www.dropbox.com", "dl.dropboxusercontent.com")
@@ -91,7 +96,8 @@ def decode_b64_to_img(b64_str: str, nome_arquivo: str, extensao_img: str) -> Non
 
 def decode_and_upload_to_dropbox(b64_img_str: str, img_name: str, img_extension: str) -> str:
     decode_b64_to_img(b64_img_str, img_name, img_extension)
-    url = upload_image_to_dropbox(f'img/{img_name}.{img_extension}', f'{img_name}.{img_extension}')
+    url = upload_image_to_dropbox(
+        f'img/{img_name}.{img_extension}', f'{img_name}.{img_extension}')
 
     return url
 

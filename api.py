@@ -1,7 +1,6 @@
 from flask import Flask
 from utils import PostgresConnection
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
 import views
 
 app: Flask = Flask(__file__)

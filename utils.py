@@ -53,7 +53,12 @@ class PostgresConnection:
         
         columns = [desc[0] for desc in self.__cursor.description]
         values = self.__cursor.fetchall()
-        print(values)
+        result = []
+        for value in values:
+            row = dict(zip(columns, value))
+            result.append(row)
+        
+        return result
         
 
 

@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS item CASCADE;
+DROP TABLE IF EXISTS produto CASCADE;
+DROP TABLE IF EXISTS venda CASCADE;
+DROP TABLE IF EXISTS pessoacontato CASCADE;
+DROP TABLE IF EXISTS pessoa CASCADE;
+DROP TABLE IF EXISTS tipocontato CASCADE;
+DROP TABLE IF EXISTS formapagamento CASCADE;
+DROP TABLE IF EXISTS endereco CASCADE;
+DROP TABLE IF EXISTS funcao CASCADE;
+DROP TABLE IF EXISTS grupo;
+
+
 CREATE TABLE IF NOT EXISTS funcao (
     codigo SERIAL PRIMARY KEY,
     descricao VARCHAR(63) NOT NULL
@@ -6,7 +18,7 @@ CREATE TABLE IF NOT EXISTS funcao (
 CREATE TABLE IF NOT EXISTS endereco (
     codigo SERIAL PRIMARY KEY,
     logradouro VARCHAR(63) NOT NULL,
-    numero INTEGER(5) NOT NULL,
+    numero INTEGER NOT NULL,
     cep VARCHAR(8),
     bairro VARCHAR(63)
 );
@@ -23,7 +35,7 @@ CREATE TABLE IF NOT EXISTS pessoa (
         ON UPDATE CASCADE,
     FOREIGN KEY (codigo_endereco) REFERENCES endereco(codigo)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
+        ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS tipocontato (
@@ -48,6 +60,11 @@ CREATE TABLE IF NOT EXISTS formapagamento (
     descricao VARCHAR(63) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS grupo (
+    codigo SERIAL PRIMARY KEY,
+    descricao VARCHAR(63) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS venda (
     codigo BIGSERIAL PRIMARY KEY,
     horario TIMESTAMP DEFAULT (NOW()::TIMESTAMP(0)) NOT NULL,
@@ -66,16 +83,21 @@ CREATE TABLE IF NOT EXISTS produto (
     codigo BIGSERIAL PRIMARY KEY,
     descricao VARCHAR(255) NOT NULL,
     valor DECIMAL(10, 2) NOT NULL,
-    quantidade INTEGER(4) NOT NULL,
+    imagem VARCHAR(1023),
+    quantidade INTEGER NOT NULL,
     codigo_fornecedor INTEGER NOT NULL,
+    grupo INTEGER NOT NULL,
     FOREIGN KEY (codigo_fornecedor) REFERENCES pessoa(codigo)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (grupo) REFERENCES grupo(codigo)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS item (
     codigo BIGSERIAL PRIMARY KEY,
-    quantidade INTEGER(4) NOT NULL,
+    quantidade INTEGER NOT NULL,
     valor_parcial DECIMAL(10, 2),
     codigo_produto INTEGER NOT NULL,
     codigo_venda INTEGER NOT NULL,

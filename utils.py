@@ -6,10 +6,10 @@ import dropbox
 import base64
 import os
 from os import getenv
+from typing import Any
 import psycopg2
 
 
-@singleton
 class PostgresConnection:
     def __init__(self, user: str | None=None, password: str | None=None) -> None:
         load_dotenv()
@@ -47,6 +47,14 @@ class PostgresConnection:
 
     def commit(self) -> None:
         self.__connection.commit()
+    
+    def retrieve_from_query(self, query: str) -> list[dict[str, Any]]:
+        self.__cursor.execute(query)
+        
+        columns = [desc[0] for desc in self.__cursor.description]
+        values = self.__cursor.fetchall()
+        print(values)
+        
 
 
 def upload_image_to_dropbox(img_path: str, img_name: str) -> str:

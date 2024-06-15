@@ -18,12 +18,22 @@ def connected(func):
 
 
 def retrieve_last_created(table_name: str) -> dict[str, Any]:
+    """Função que recebe um nome da tabela e retorna todas as informações do último objeto que foi criado, ideal para requisições POST, as quais devem retornar o objeto que foi criado.
+
+    Args:
+        table_name: Nome da tabela a qual será pego o último objeto criado
+
+    Returns:
+        dict: HashMap contendo as informações do item criado
+    """
     return connection.retrieve_one_from_query(
         f'SELECT * FROM {table_name} ORDER BY codigo DESC LIMIT 1;'
     )
 
 
 class Login(Resource):
+    """Classe que contém o método POST para fazer login na aplicação, ela funciona pegando o usuário NO BANCO (Usuário da aplicação = Usuário no banco)"""
+
     def post(self):
         args: dict = serializers.login_serializer.parse_args().copy()
 
@@ -38,6 +48,7 @@ class Login(Resource):
 
 
 class GrupoList(Resource):
+    """Classe responsável pelos métodos relacionados aos grupos, neste caso só tem o método GET, o qual irá retornar uma lista contendo todos os grupos"""
     @connected
     def get(self):
         return connection.retrieve_many_from_query('SELECT * FROM grupo;')

@@ -1,0 +1,2 @@
+INSERT INTO Pessoa(nome, documento, senha, codigo_funcao, codigo_endereco) VALUES ('Murilo Hasse', '00000000000','fds', 1, 1);
+INSERT INTO Pessoa(nome, documento, senha, codigo_funcao, codigo_endereco) VALUES ('Matheus Augusto', '13217494903','123123', 2, 2);

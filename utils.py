@@ -6,6 +6,7 @@ import base64
 import os
 from os import getenv
 from typing import Any
+from decimal import Decimal
 import psycopg2
 
 
@@ -46,13 +47,13 @@ class PostgresConnection:
             self.__connection.commit()
             self.__connection.close()
 
-    def execute(self, sql_command: str) -> None:
-        self.__cursor.execute(sql_command)
+    def execute(self, sql_command: str, *args) -> None:
+        self.__cursor.execute(sql_command, *args)
 
     def commit(self) -> None:
         self.__connection.commit()
 
-    def retrieve_from_query(self, query: str) -> list[dict[str, Any]]:
+    def retrieve_many_from_query(self, query: str) -> list[dict[str, Any]]:
         self.__cursor.execute(query)
 
         columns = [desc[0] for desc in self.__cursor.description]
@@ -64,6 +65,14 @@ class PostgresConnection:
             result.append(row)
 
         return result
+
+    def retrieve_one_from_query(self, query) -> dict[str, Any]:
+        self.__cursor.execute(query)
+
+        columns = [desc[0] for desc in self.__cursor.description]
+        values = self.__cursor.fetchall()[0]
+
+        return dict(zip(columns, values))
 
 
 def upload_image_to_dropbox(img_path: str, img_name: str) -> str:

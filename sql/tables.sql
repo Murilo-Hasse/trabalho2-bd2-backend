@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS tipocontato CASCADE;
 DROP TABLE IF EXISTS formapagamento CASCADE;
 DROP TABLE IF EXISTS endereco CASCADE;
 DROP TABLE IF EXISTS funcao CASCADE;
-DROP TABLE IF EXISTS grupo;
+DROP TABLE IF EXISTS grupo CASCADE;
 
 
 CREATE TABLE IF NOT EXISTS funcao (
@@ -68,7 +68,7 @@ CREATE TABLE IF NOT EXISTS grupo (
 CREATE TABLE IF NOT EXISTS venda (
     codigo BIGSERIAL PRIMARY KEY,
     horario TIMESTAMP DEFAULT (NOW()::TIMESTAMP(0)) NOT NULL,
-    valor_total DECIMAL(10, 2) NOT NULL,
+    valor_total FLOAT NOT NULL,
     codigo_funcionario INTEGER NOT NULL,
     codigo_forma_pagamento INTEGER NOT NULL,
     FOREIGN KEY (codigo_funcionario) REFERENCES pessoa(codigo)
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS venda (
 CREATE TABLE IF NOT EXISTS produto (
     codigo BIGSERIAL PRIMARY KEY,
     descricao VARCHAR(255) NOT NULL,
-    valor DECIMAL(10, 2) NOT NULL,
+    valor FLOAT NOT NULL,
     imagem VARCHAR(1023),
     quantidade INTEGER NOT NULL,
     codigo_fornecedor INTEGER NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS produto (
 CREATE TABLE IF NOT EXISTS item (
     codigo BIGSERIAL PRIMARY KEY,
     quantidade INTEGER NOT NULL,
-    valor_parcial DECIMAL(10, 2),
+    valor_parcial FLOAT,
     codigo_produto INTEGER NOT NULL,
     codigo_venda INTEGER NOT NULL,
     FOREIGN KEY (codigo_produto) REFERENCES produto(codigo)

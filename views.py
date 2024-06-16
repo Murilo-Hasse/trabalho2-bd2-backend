@@ -156,6 +156,13 @@ class Produtos(Resource):
 class Compra(Resource):
     @connected
     def post(self):
+        """
+        Método post de registro de vendas, ele começa pegando os argumentos do serializer,
+        após isso, ele pega o valor do produto via banco, e também a quantidade que está em estoque,
+        para daí checar se é maior que a da venda, se for, passa, se não for, retorna código 400,
+        depois disso ele registra a venda, e faz um update na quantidade do item no banco
+        para dai retornar o JSON resposa.
+        """
         args = serializers.compra_serializer.parse_args()
 
         quantidade_a_ser_vendido = args['quantidade'] if args['quantidade'] else 1
@@ -172,14 +179,19 @@ class Compra(Resource):
 
         connection.execute(
             """
-            INSERT INTO venda(quantidade, valor_total, codigo_usuario, codigo_forma_pagamento, codigo_produto) VALUES (%s, %s, %s, %s, %s);
+            INSERT INTO venda(
+                quantidade, 
+                valor_total, 
+                codigo_usuario, 
+                codigo_forma_pagamento, 
+                codigo_produto
+                ) 
+            VALUES (%s, %s, %s, %s, %s);
             """, (quantidade_a_ser_vendido, final_price, args['usuario'], args['forma_pagamento'], codigo_produto)
         )
         quantidade_resultante = quantidade_em_estoque - quantidade_a_ser_vendido
         connection.execute(
-            f"""
-            UPDATE produto SET quantidade = {quantidade_resultante} WHERE codigo = {args['codigo_produto']};
-            """
+            f"UPDATE produto SET quantidade = {quantidade_resultante} WHERE codigo = {args['codigo_produto']};"
         )
         connection.commit()
 

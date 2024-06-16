@@ -112,9 +112,10 @@ class ProdutoList(Resource):
         del args['extensao_imagem']
 
         args['imagem'] = img_url
+        print(args)
 
         connection.execute(
-            'INSERT INTO produto(descricao, valor, quantidade, imagem, grupo, codigo_fornecedor) VALUES (%s, %s, %s, %s, %s, %s)',
+            'INSERT INTO produto(nome, descricao, valor, quantidade, imagem, grupo, codigo_fornecedor) VALUES (%s ,%s, %s, %s, %s, %s, %s)',
             list(args.values())
         )
         connection.commit()

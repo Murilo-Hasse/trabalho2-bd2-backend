@@ -19,6 +19,7 @@ endereco_serializer.add_argument(
     'bairro', type=str, help='Bairro não preenchido', required=True)
 
 produto_post_serializer: RequestParser = RequestParser()
+produto_post_serializer.add_argument('nome', type=str)
 produto_post_serializer.add_argument(
     'descricao', type=str, help='Nome do item não informado', required=True)
 produto_post_serializer.add_argument(

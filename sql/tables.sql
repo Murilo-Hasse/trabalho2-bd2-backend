@@ -65,23 +65,10 @@ CREATE TABLE IF NOT EXISTS grupo (
     descricao VARCHAR(63) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS venda (
-    codigo BIGSERIAL PRIMARY KEY,
-    horario TIMESTAMP DEFAULT (NOW()::TIMESTAMP(0)) NOT NULL,
-    valor_total FLOAT NOT NULL,
-    codigo_funcionario INTEGER NOT NULL,
-    codigo_forma_pagamento INTEGER NOT NULL,
-    FOREIGN KEY (codigo_funcionario) REFERENCES pessoa(codigo)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (codigo_forma_pagamento) REFERENCES formapagamento(codigo)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
-);
-
 CREATE TABLE IF NOT EXISTS produto (
     codigo BIGSERIAL PRIMARY KEY,
-    descricao VARCHAR(255) NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    descricao VARCHAR(1027),
     valor FLOAT NOT NULL,
     imagem VARCHAR(1023),
     quantidade INTEGER NOT NULL,
@@ -95,16 +82,21 @@ CREATE TABLE IF NOT EXISTS produto (
         ON UPDATE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS item (
+CREATE TABLE IF NOT EXISTS venda (
     codigo BIGSERIAL PRIMARY KEY,
+    horario TIMESTAMP DEFAULT (NOW()::TIMESTAMP(0)) NOT NULL,
     quantidade INTEGER NOT NULL,
-    valor_parcial FLOAT,
+    valor_total FLOAT NOT NULL,
+    codigo_usuario INTEGER NOT NULL,
+    codigo_forma_pagamento INTEGER NOT NULL,
     codigo_produto INTEGER NOT NULL,
-    codigo_venda INTEGER NOT NULL,
-    FOREIGN KEY (codigo_produto) REFERENCES produto(codigo)
+    FOREIGN KEY (codigo_usuario) REFERENCES pessoa(codigo)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (codigo_venda) REFERENCES venda(codigo)
+    FOREIGN KEY (codigo_forma_pagamento) REFERENCES formapagamento(codigo)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (codigo_produto) REFERENCES produto(codigo)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );

@@ -3,6 +3,7 @@ from utils import PostgresConnection, WrongPasswordError, decode_and_upload_to_d
 import serializers
 from http import HTTPStatus
 from typing import Any
+from datetime import datetime
 
 
 connection = None
@@ -79,6 +80,7 @@ class ProdutoList(Resource):
         query = """
         SELECT
             produto.codigo AS codigo,
+            produto.nome AS nome,
             produto.descricao AS descricao,
             produto.valor AS valor,
             produto.quantidade AS quantidade,
@@ -90,7 +92,9 @@ class ProdutoList(Resource):
         INNER JOIN grupo
             ON produto.grupo = grupo.codigo
         INNER JOIN pessoa
-            ON produto.codigo_fornecedor = pessoa.codigo;   
+            ON produto.codigo_fornecedor = pessoa.codigo
+        WHERE produto.quantidade > 0
+        ORDER BY produto.codigo ASC;
         """
         return connection.retrieve_many_from_query(query)
 
@@ -123,6 +127,7 @@ class Produtos(Resource):
         query = f"""
         SELECT
             produto.codigo AS codigo,
+            produto.nome AS nome,
             produto.descricao AS descricao,
             produto.valor AS valor,
             produto.quantidade AS quantidade,
@@ -146,3 +151,42 @@ class Produtos(Resource):
             f'DELETE FROM produto WHERE codigo = {produto_id}'
         )
         connection.commit()
+
+
+class Compra(Resource):
+    @connected
+    def post(self):
+        args = serializers.compra_serializer.parse_args()
+
+        quantidade_a_ser_vendido = args['quantidade'] if args['quantidade'] else 1
+        codigo_produto = args['codigo_produto']
+
+        preco_produto, quantidade_em_estoque = connection.retrieve_one_from_query(
+            f"SELECT valor, quantidade FROM produto WHERE codigo = {codigo_produto}"
+        ).values()
+
+        if quantidade_a_ser_vendido > quantidade_em_estoque:
+            abort(HTTPStatus.BAD_REQUEST, message='Não tem tanto produto assim!')
+
+        final_price = preco_produto * quantidade_a_ser_vendido
+
+        connection.execute(
+            """
+            INSERT INTO venda(quantidade, valor_total, codigo_usuario, codigo_forma_pagamento, codigo_produto) VALUES (%s, %s, %s, %s, %s);
+            """, (quantidade_a_ser_vendido, final_price, args['usuario'], args['forma_pagamento'], codigo_produto)
+        )
+        quantidade_resultante = quantidade_em_estoque - quantidade_a_ser_vendido
+        connection.execute(
+            f"""
+            UPDATE produto SET quantidade = {quantidade_resultante} WHERE codigo = {args['codigo_produto']};
+            """
+        )
+        connection.commit()
+
+        response = retrieve_last_created('venda')
+
+        for k, v in response.items():
+            if isinstance(v, datetime):
+                response[k] = str(v)
+
+        return response

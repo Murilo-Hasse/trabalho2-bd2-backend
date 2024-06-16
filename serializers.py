@@ -33,3 +33,12 @@ produto_post_serializer.add_argument(
     'grupo', type=int, help='Grupo não informado/não é válido', required=True)
 produto_post_serializer.add_argument(
     'extensao_imagem', type=str, help='A extensão da imagem não foi fornecida!')
+
+compra_serializer: RequestParser = RequestParser()
+compra_serializer.add_argument('quantidade', required=False, type=int)
+compra_serializer.add_argument(
+    'forma_pagamento', required=True, help='forma de pagamento não especificada', type=int)
+compra_serializer.add_argument(
+    'codigo_produto', required=True, help='Produto não especificado', type=int)
+compra_serializer.add_argument(
+    'usuario', required=True, help='Usuário não especificado', type=int)

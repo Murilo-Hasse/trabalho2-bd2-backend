@@ -96,6 +96,7 @@ def upload_image_to_dropbox(img_path: str, img_name: str) -> str:
 
 
 def decode_and_upload_to_dropbox(b64_img_str: str, img_name: str, img_extension: str) -> str:
+    """Pega uma imagem em base64 e decodifica ela, depois salva em um arquivo na pasta /img/, e por fim, pega essa imagem e faz o upload dela no dropbox, retornando assim o URL feito pelo dropbox"""
     image_bytes = base64.b64decode(b64_img_str)
 
     with open(f"""img/{img_name}.{img_extension}""", 'wb') as file:

@@ -6,7 +6,7 @@ from typing import Any
 
 
 connection = None
-connection = PostgresConnection(user='postgres', password='postgres')
+connection = PostgresConnection(user='postgres', password='admin')
 
 
 def connected(func):

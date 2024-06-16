@@ -44,7 +44,7 @@ class PostgresConnection:
 
 
 if __name__ == '__main__':
-    connection = PostgresConnection('postgres', 'postgres')
+    connection = PostgresConnection('postgres', 'admin')
 
     files = [str(file) for file in INSERTS_FOLDER.iterdir()
              if str(file).endswith('.sql')]

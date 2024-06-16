@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_restful import Api
+from flask_cors import CORS
 import views
 
 app: Flask = Flask(__file__)
+CORS(app)
 api: Api = Api(app)
 
 api.add_resource(views.Login, '/login/')

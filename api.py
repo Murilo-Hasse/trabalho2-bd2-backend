@@ -15,6 +15,7 @@ api.add_resource(views.Produtos, '/produtos/<int:produto_id>/')
 api.add_resource(views.GrupoList, '/grupos/')
 api.add_resource(views.FormaPagamentoList, '/formaspagamento/')
 api.add_resource(views.Compra, '/compra/')
+api.add_resource(views.ComprasList, '/compras/<int:usuario_id>/')
 
 if __name__ == '__main__':
     app.run(debug=True)

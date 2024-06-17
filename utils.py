@@ -73,9 +73,8 @@ class PostgresConnection:
 
         return dict(zip(columns, values))
 
-    def refresh(self) -> None:
-        self.__cursor.close()
-        self.__cursor = self.__connection.cursor()
+    def rollback(self) -> None:
+        self.__connection.rollback()
 
 
 def upload_image_to_dropbox(img_path: str, img_name: str) -> str:

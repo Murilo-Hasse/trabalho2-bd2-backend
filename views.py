@@ -172,18 +172,56 @@ class Compra(Resource):
 
         try:
             response = connection.retrieve_one_from_query(
-                f'''SELECT * FROM cadastrar_venda({codigo_produto}, {quantidade_a_ser_vendido}, {
-                    args['usuario']}, {args['forma_pagamento']})'''
+                f'''SELECT * FROM cadastrar_venda(
+                    {codigo_produto},
+                    {quantidade_a_ser_vendido},
+                    {args['usuario']},
+                    {args['forma_pagamento']}
+                )'''
             )
         except RaiseException:
-            abort(HTTPStatus.BAD_REQUEST,
-                  message='A quantidade de itens a ser comprada é maior que a quantidade de itens no estoque.'
-                  )
-            connection.refresh()
+            connection.rollback()
+            abort(
+                HTTPStatus.BAD_REQUEST,
+                message='A quantidade de itens a ser comprada é maior que a quantidade de itens no estoque.'
+            )
             return
 
         for k, v in response.items():
             if isinstance(v, datetime):
                 response[k] = str(v)
+
+        return response
+
+
+class ComprasList(Resource):
+    @connected
+    def get(self, usuario_id):
+        response = connection.retrieve_many_from_query(
+            f"""
+            SELECT
+                venda.codigo AS codigo,
+                venda.horario AS horario,
+                venda.quantidade AS quantidade,
+                venda.valor_total AS valor_total,
+                formapagamento.descricao AS forma_pagamento,
+                produto.nome AS nome_produto,
+                produto.imagem AS imagem_produto
+            FROM
+                venda
+            INNER JOIN
+                formapagamento
+            ON venda.codigo_forma_pagamento = formapagamento.codigo
+            INNER JOIN
+                produto
+            ON venda.codigo_produto = produto.codigo
+            WHERE
+                codigo_usuario = {usuario_id}
+            """
+        )
+        for hasmap in response:
+            for k, v in hasmap.items():
+                if isinstance(v, datetime):
+                    hasmap[k] = str(v)
 
         return response

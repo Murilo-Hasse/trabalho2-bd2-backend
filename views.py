@@ -4,6 +4,7 @@ import serializers
 from http import HTTPStatus
 from typing import Any
 from datetime import datetime
+from psycopg2.errors import RaiseException
 
 
 connection = None
@@ -169,10 +170,18 @@ class Compra(Resource):
         quantidade_a_ser_vendido = args['quantidade'] if args['quantidade'] else 1
         codigo_produto = args['codigo_produto']
 
-        response = connection.retrieve_one_from_query(
-            f'''SELECT cadastrar_venda({codigo_produto}, {quantidade_a_ser_vendido}, {
-                args['usuario']}, {args['forma_pagamento']})'''
-        )
+        try:
+            response = connection.retrieve_one_from_query(
+                f'''SELECT * FROM cadastrar_venda({codigo_produto}, {quantidade_a_ser_vendido}, {
+                    args['usuario']}, {args['forma_pagamento']})'''
+            )
+        except RaiseException:
+            abort(HTTPStatus.BAD_REQUEST,
+                  message='A quantidade de itens a ser comprada é maior que a quantidade de itens no estoque.'
+                  )
+            connection.refresh()
+            return
+
         for k, v in response.items():
             if isinstance(v, datetime):
                 response[k] = str(v)

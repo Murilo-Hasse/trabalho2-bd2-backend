@@ -1,10 +1,10 @@
 CREATE OR REPLACE FUNCTION cadastrar_venda (
-    codigo_produto INTEGER
+    codigo_produto INTEGER,
     quantidade_a_vender INTEGER,
     usuario INTEGER,
     forma_pagamento INTEGER
 )
-RETURNS venda%ROWTYPE AS $$
+RETURNS venda AS $$
 DECLARE
     quantidade_estoque INTEGER;
     quantidade_resultante INTEGER;

@@ -169,35 +169,10 @@ class Compra(Resource):
         quantidade_a_ser_vendido = args['quantidade'] if args['quantidade'] else 1
         codigo_produto = args['codigo_produto']
 
-        preco_produto, quantidade_em_estoque = connection.retrieve_one_from_query(
-            f"SELECT valor, quantidade FROM produto WHERE codigo = {codigo_produto}"
-        ).values()
-
-        if quantidade_a_ser_vendido > quantidade_em_estoque:
-            abort(HTTPStatus.BAD_REQUEST, message='Não tem tanto produto assim!')
-
-        final_price = preco_produto * quantidade_a_ser_vendido
-
-        connection.execute(
-            """
-            INSERT INTO venda(
-                quantidade, 
-                valor_total, 
-                codigo_usuario, 
-                codigo_forma_pagamento, 
-                codigo_produto
-                ) 
-            VALUES (%s, %s, %s, %s, %s);
-            """, (quantidade_a_ser_vendido, final_price, args['usuario'], args['forma_pagamento'], codigo_produto)
+        response = connection.retrieve_one_from_query(
+            f'''SELECT cadastrar_venda({codigo_produto}, {quantidade_a_ser_vendido}, {
+                args['usuario']}, {args['forma_pagamento']})'''
         )
-        quantidade_resultante = quantidade_em_estoque - quantidade_a_ser_vendido
-        connection.execute(
-            f"UPDATE produto SET quantidade = {quantidade_resultante} WHERE codigo = {args['codigo_produto']};"
-        )
-        connection.commit()
-
-        response = retrieve_last_created('venda')
-
         for k, v in response.items():
             if isinstance(v, datetime):
                 response[k] = str(v)

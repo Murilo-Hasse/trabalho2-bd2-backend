@@ -8,6 +8,16 @@ login_serializer.add_argument(
 login_serializer.add_argument(
     'password', type=str, help='Senha não preenchida', required=True)
 
+
+user_post_serializer: RequestParser = RequestParser()
+user_post_serializer.add_argument(
+    'nome', type=str, required=True, help='Nome não especificado')
+user_post_serializer.add_argument(
+    'documento', type=str, required=True, help='CPF/CNPJ não especificado')
+user_post_serializer.add_argument(
+    'senha', type=str, required=True, help='Senha não especificada')
+
+
 endereco_serializer: RequestParser = RequestParser()
 endereco_serializer.add_argument(
     'logradouro', type=str, help='Endereço não preenchido', required=True)

@@ -1,4 +1,5 @@
 from flask_restful import Resource, abort
+from flask import request
 from utils import PostgresConnection, WrongPasswordError, decode_and_upload_to_dropbox
 import serializers
 from http import HTTPStatus
@@ -7,14 +8,24 @@ from datetime import datetime
 from psycopg2.errors import RaiseException
 
 
+connection_pool = {}
 connection = None
 connection = PostgresConnection(user='postgres', password='admin')
 
 
 def connected(func):
     def wrapper(*args, **kwargs):
-        if not connection:
-            abort(HTTPStatus.UNAUTHORIZED, message='You are not logged in')
+        user = request.headers.get('user')
+        if not user:
+            abort(
+                HTTPStatus.BAD_REQUEST, message='Usuário não especificado nos Headers da request!'
+            )
+            return
+        global connection_pool
+        if int(user) not in connection_pool:
+            abort(
+                HTTPStatus.UNAUTHORIZED, message='Usuário não está logado'
+            )
         return func(*args, **kwargs)
     return wrapper
 
@@ -40,13 +51,34 @@ class Login(Resource):
         args: dict = serializers.login_serializer.parse_args().copy()
 
         try:
-            PostgresConnection(**args)
+            pg_connection = PostgresConnection(**args)
         except WrongPasswordError as error:
             return abort(HTTPStatus.BAD_REQUEST, message=error.args)
 
-        del args['password']
+        user_info = connection.retrieve_one_from_query(
+            f"""
+            SELECT
+                codigo,
+                nome
+            FROM
+                pessoa
+            WHERE
+                nome = '{args['user']}'
+                AND
+                senha = '{args['password']}'
+            """
+        )
+        global connection_pool
+        if user_info['codigo'] not in connection_pool:
+            connection_pool[user_info['codigo']] = pg_connection
 
-        return args
+        return user_info
+
+
+class User(Resource):
+    @connected
+    def post(self):
+        ...
 
 
 class GrupoList(Resource):

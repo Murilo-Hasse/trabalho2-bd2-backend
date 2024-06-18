@@ -3,14 +3,14 @@ from flask import request
 from utils import PostgresConnection, WrongPasswordError, decode_and_upload_to_dropbox
 import serializers
 from http import HTTPStatus
-from typing import Any
+from typing import Any, Optional
 from datetime import datetime
 from psycopg2.errors import RaiseException
 
-
-connection_pool = {}
-connection = None
+admin_connection = None
 connection = PostgresConnection(user='postgres', password='admin')
+
+connection_pool: dict[int, PostgresConnection] = {}
 
 
 def connected(func):
@@ -26,7 +26,8 @@ def connected(func):
             abort(
                 HTTPStatus.UNAUTHORIZED, message='Usuário não está logado'
             )
-        return func(*args, **kwargs)
+        connection = connection_pool.get(int(user))
+        return func(*args, **kwargs, connection=connection)
     return wrapper
 
 
@@ -77,26 +78,26 @@ class Login(Resource):
 
 class User(Resource):
     @connected
-    def post(self):
+    def post(self, connection: PostgresConnection):
         ...
 
 
 class GrupoList(Resource):
     """Classe responsável pelos métodos relacionados aos grupos, neste caso só tem o método GET, o qual irá retornar uma lista contendo todos os grupos"""
     @connected
-    def get(self):
+    def get(self, connection: PostgresConnection):
         return connection.retrieve_many_from_query('SELECT * FROM grupo;')
 
 
 class FormaPagamentoList(Resource):
     @connected
-    def get(self):
+    def get(self, connection: PostgresConnection):
         return connection.retrieve_many_from_query('SELECT * FROM formapagamento;')
 
 
 class Endereco(Resource):
     @connected
-    def post(self):
+    def post(self, connection: PostgresConnection):
         args = serializers.endereco_serializer.parse_args()
 
         connection.execute(
@@ -109,7 +110,7 @@ class Endereco(Resource):
 
 class ProdutoList(Resource):
     @connected
-    def get(self):
+    def get(self, connection: PostgresConnection):
         query = """
         SELECT
             produto.codigo AS codigo,
@@ -132,7 +133,7 @@ class ProdutoList(Resource):
         return connection.retrieve_many_from_query(query)
 
     @connected
-    def post(self):
+    def post(self, connection: PostgresConnection):
         args = serializers.produto_post_serializer.parse_args()
 
         img_b64 = args['imagem']
@@ -157,7 +158,7 @@ class ProdutoList(Resource):
 
 class Produtos(Resource):
     @connected
-    def get(self, produto_id):
+    def get(self, produto_id, connection: PostgresConnection):
         query = f"""
         SELECT
             produto.codigo AS codigo,
@@ -180,7 +181,7 @@ class Produtos(Resource):
         return connection.retrieve_one_from_query(query)
 
     @connected
-    def delete(self, produto_id):
+    def delete(self, produto_id, connection: PostgresConnection):
         connection.execute(
             f'DELETE FROM produto WHERE codigo = {produto_id}'
         )
@@ -189,7 +190,7 @@ class Produtos(Resource):
 
 class Compra(Resource):
     @connected
-    def post(self):
+    def post(self, connection: PostgresConnection):
         """
         Método post de registro de vendas, ele começa pegando os argumentos do serializer,
         após isso, ele pega o valor do produto via banco, e também a quantidade que está em estoque,
@@ -228,7 +229,7 @@ class Compra(Resource):
 
 class ComprasList(Resource):
     @connected
-    def get(self, usuario_id):
+    def get(self, usuario_id, connection: PostgresConnection):
         response = connection.retrieve_many_from_query(
             f"""
             SELECT

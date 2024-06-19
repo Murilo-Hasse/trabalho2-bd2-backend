@@ -5,7 +5,7 @@ import serializers
 from http import HTTPStatus
 from typing import Any, Optional
 from datetime import datetime
-from psycopg2.errors import RaiseException
+from psycopg2.errors import RaiseException, InsufficientPrivilege
 
 admin_connection = None
 connection = PostgresConnection(user='postgres', password='admin')
@@ -27,7 +27,13 @@ def connected(func):
                 HTTPStatus.UNAUTHORIZED, message='Usuário não está logado'
             )
         connection = connection_pool.get(int(user))
-        return func(*args, **kwargs, connection=connection)
+        try:
+            func(*args, **kwargs, connection=connection)
+        except InsufficientPrivilege:
+            abort(
+                HTTPStatus.FORBIDDEN, message='Você não tem privilégio o suficiente'
+            )
+        return
     return wrapper
 
 
@@ -64,7 +70,7 @@ class Login(Resource):
             FROM
                 pessoa
             WHERE
-                nome = '{args['user']}'
+                documento = '{args['user']}'
                 AND
                 senha = '{args['password']}'
             """

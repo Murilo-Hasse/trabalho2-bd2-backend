@@ -69,7 +69,7 @@ class Login(Resource):
             FROM
                 pessoa
             WHERE
-                documento = '{args['user']}'
+                email = '{args['user']}'
                 AND
                 senha = '{args['password']}'
             """

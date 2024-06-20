@@ -1,5 +1,12 @@
 version: '3.8'
 
 services:
-  postgresql:
+  postgres:
+    image: 'postgres'
   api:
+    image: 'api:1.0'
+    ports:
+      - "8080:5000"
+    environment:
+      - HOST=postgres
+      - DATABASE=trabalhobanco2

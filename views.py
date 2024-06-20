@@ -7,8 +7,7 @@ from typing import Any, Optional
 from datetime import datetime
 from psycopg2.errors import RaiseException, InsufficientPrivilege
 
-admin_connection = None
-connection = PostgresConnection(user='postgres', password='admin')
+admin_connection = PostgresConnection(user='postgres', password='admin')
 
 connection_pool: dict[int, PostgresConnection] = {}
 
@@ -46,7 +45,7 @@ def retrieve_last_created(table_name: str) -> dict[str, Any]:
     Returns:
         dict: HashMap contendo as informações do item criado
     """
-    return connection.retrieve_one_from_query(
+    return admin_connection.retrieve_one_from_query(
         f'SELECT * FROM {table_name} ORDER BY codigo DESC LIMIT 1;'
     )
 
@@ -62,7 +61,7 @@ class Login(Resource):
         except WrongPasswordError as error:
             return abort(HTTPStatus.BAD_REQUEST, message=error.args)
 
-        user_info = connection.retrieve_one_from_query(
+        user_info = admin_connection.retrieve_one_from_query(
             f"""
             SELECT
                 codigo,

@@ -2,7 +2,7 @@ CREATE OR REPLACE FUNCTION user_table_to_user()
 RETURNS TRIGGER AS $$
 DECLARE
     last_user pessoa%ROWTYPE;
-    documento TEXT;
+    email TEXT;
     passwd TEXT;
 BEGIN
     SELECT * INTO last_user 
@@ -10,10 +10,10 @@ BEGIN
     ORDER BY codigo DESC 
     LIMIT 1;
 
-    documento := quote_ident(last_user.documento);
+    email := quote_ident(last_user.email);
     passwd := last_user.senha;
 
-    EXECUTE 'CREATE USER ' || documento || ' WITH PASSWORD ' || quote_literal(passwd);
+    EXECUTE 'CREATE USER ' || email || ' WITH PASSWORD ' || quote_literal(passwd);
 
     RETURN NEW;
 END;

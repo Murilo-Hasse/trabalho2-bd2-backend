@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS pessoa (
     codigo BIGSERIAL PRIMARY KEY,
     nome VARCHAR(45) NOT NULL,
     documento VARCHAR(14) NOT NULL,
+    email VARCHAR(127) NOT NULL,
     senha VARCHAR(50) NOT NULL,
     codigo_funcao INTEGER,
     codigo_endereco INTEGER,

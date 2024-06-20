@@ -18,3 +18,8 @@ GRANT EXECUTE ON FUNCTION user_table_to_user TO padrao;
 GRANT TRIGGER ON pessoa TO padrao;
 
 --------------------------------------------------------------
+-- Criação do grupo de usuarios cadastrados
+CREATE ROLE grupo_usuario;
+
+--Dar permissão a consultar na tabela produto.
+GRANT SELECT ON TABLE produto TO grupo_usuario;

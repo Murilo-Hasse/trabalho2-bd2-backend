@@ -12,8 +12,7 @@ USING (documento  = current_user);
 
 ALTER TABLE pessoa FORCE ROW LEVEL SECURITY;
 
-GRANT SELECT ON venda TO grupo_usuario;
-
+-------------------------------------------------
 --Habilita o controle de acesso na tabela
 ALTER TABLE venda ENABLE ROW LEVEL SECURITY;
  

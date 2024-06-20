@@ -8,7 +8,7 @@ CREATE POLICY acesso_proprio_pessoa
 ON pessoa
 FOR SELECT
 TO grupo_usuario
-USING (documento  = current_user);
+USING (documento  = current_user); ---- trocar por email current user vai ser email
 
 ALTER TABLE pessoa FORCE ROW LEVEL SECURITY;
 

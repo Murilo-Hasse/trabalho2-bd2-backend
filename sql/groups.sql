@@ -23,3 +23,6 @@ CREATE ROLE grupo_usuario;
 
 --Dar permissão a consultar na tabela produto.
 GRANT SELECT ON TABLE produto TO grupo_usuario;
+
+--Dar permissão a consultar na tabela venda.
+GRANT SELECT ON venda TO grupo_usuario;

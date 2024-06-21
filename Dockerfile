@@ -1,8 +1,8 @@
-FROM python3.12.2
+FROM python:3.12.2
 
 WORKDIR /api
 
-COPY . /api/
+COPY . /api
 
 RUN pip install --no-cache-dir -r requirements.txt
 

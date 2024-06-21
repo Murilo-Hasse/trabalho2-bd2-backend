@@ -4,8 +4,8 @@ tempCodeRunnerFile.py
 
 *.sqlite3
 *.pyc
+*.env
 venv
-env
 .DS_Store
 local_settings.py
 _local_settings.py

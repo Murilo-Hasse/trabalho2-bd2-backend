@@ -1,12 +1,23 @@
 version: '3.8'
 
 services:
-  postgres:
+  postgresql:
     image: 'postgres'
-  api:
-    image: 'api:1.0'
-    ports:
-      - "8080:5000"
     environment:
-      - HOST=postgres
+      - POSTGRES_DB=trabalhobanco2
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - 'dbdata:/var/lib/postgresql/data'
+  api:
+    build: .
+    ports:
+      - 5000:5000
+    environment:
+      - HOST=postgresql
       - DATABASE=trabalhobanco2
+    depends_on:
+      - postgresql
+
+volumes:
+  dbdata:

@@ -18,4 +18,4 @@ api.add_resource(views.Compra, '/compra/')
 api.add_resource(views.ComprasList, '/compras/<int:usuario_id>/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000, host='0.0.0.0')

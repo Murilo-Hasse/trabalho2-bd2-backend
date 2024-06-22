@@ -82,7 +82,7 @@ class Login(Resource):
         return user_info
 
 
-class User(Resource):
+class Cadastro(Resource):
     def post(self):
         args: dict = serializers.user_post_serializer.parse_args()
 
@@ -139,6 +139,7 @@ class ProdutoList(Resource):
             produto.quantidade AS quantidade,
             produto.imagem AS imagem,
             grupo.descricao AS grupo,
+            pessoa.codigo AS codigo_fornecedor,
             pessoa.nome AS fornecedor
         FROM
             produto
@@ -187,6 +188,7 @@ class Produtos(Resource):
             produto.quantidade AS quantidade,
             produto.imagem AS imagem,
             grupo.descricao AS grupo,
+            pessoa.codigo AS codigo_fornecedor
             pessoa.nome AS fornecedor
         FROM
             produto
@@ -270,3 +272,31 @@ class ComprasList(Resource):
                     hasmap[k] = str(v)
 
         return response
+
+
+class PessoaProdutos(Resource):
+    """Classe destinada a mostrar todos os produtos que uma pessoa está vendendo"""
+    @connected
+    def get(self, connection: PostgresConnection, funcionario_id: int):
+        return connection.retrieve_many_from_query(
+            f"""
+            SELECT
+                produto.codigo AS codigo,
+                produto.nome AS nome,
+                produto.descricao AS descricao,
+                produto.valor AS valor,
+                produto.quantidade AS quantidade,
+                produto.imagem AS imagem,
+                grupo.descricao AS grupo,
+                pessoa.codigo AS codigo_fornecedor,
+                pessoa.nome AS fornecedor
+            FROM
+                produto
+            INNER JOIN grupo
+                ON produto.grupo = grupo.codigo
+            INNER JOIN pessoa
+                ON produto.codigo_fornecedor = pessoa.codigo
+            WHERE
+                produto.codigo_fornecedor = {funcionario_id};
+            """
+        )

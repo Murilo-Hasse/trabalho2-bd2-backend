@@ -4,8 +4,8 @@ from flask_cors import CORS
 import views
 
 app: Flask = Flask(__file__)
-CORS(app)
 api: Api = Api(app)
+CORS(app)
 
 api.add_resource(views.Login, '/login/')
 

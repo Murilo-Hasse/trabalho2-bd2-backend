@@ -3,9 +3,9 @@ from flask import request
 from utils import PostgresConnection, WrongPasswordError, decode_and_upload_to_dropbox
 import serializers
 from http import HTTPStatus
-from typing import Any, Optional
+from typing import Any
 from datetime import datetime
-from psycopg2.errors import RaiseException, InsufficientPrivilege, DuplicateObject
+from psycopg2.errors import RaiseException, InsufficientPrivilege
 
 admin_connection = PostgresConnection(user='postgres', password='admin')
 
@@ -29,6 +29,7 @@ def connected(func):
         try:
             func(*args, **kwargs, connection=connection)
         except InsufficientPrivilege:
+            connection.rollback()
             abort(
                 HTTPStatus.FORBIDDEN, message='Você não tem privilégio o suficiente'
             )
@@ -36,7 +37,7 @@ def connected(func):
     return wrapper
 
 
-def retrieve_last_created(table_name: str) -> dict[str, Any]:
+def retrieve_last_created(table_name: str, connection: PostgresConnection) -> dict[str, Any]:
     """Função que recebe um nome da tabela e retorna todas as informações do último objeto que foi criado, ideal para requisições POST, as quais devem retornar o objeto que foi criado.
 
     Args:
@@ -45,7 +46,7 @@ def retrieve_last_created(table_name: str) -> dict[str, Any]:
     Returns:
         dict: HashMap contendo as informações do item criado
     """
-    return admin_connection.retrieve_one_from_query(
+    return connection.retrieve_one_from_query(
         f'SELECT * FROM {table_name} ORDER BY codigo DESC LIMIT 1;'
     )
 
@@ -171,7 +172,7 @@ class ProdutoList(Resource):
             list(args.values())
         )
         connection.commit()
-        return retrieve_last_created('produto')
+        return retrieve_last_created('produto', connection=connection)
 
 
 class Produtos(Resource):
@@ -197,13 +198,6 @@ class Produtos(Resource):
             produto.codigo = {produto_id};
         """
         return connection.retrieve_one_from_query(query)
-
-    @connected
-    def delete(self, produto_id, connection: PostgresConnection):
-        connection.execute(
-            f'DELETE FROM produto WHERE codigo = {produto_id}'
-        )
-        connection.commit()
 
 
 class Compra(Resource):

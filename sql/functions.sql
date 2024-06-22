@@ -55,3 +55,49 @@ BEGIN
     RETURN resultado;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION cadastrar_usuario(
+    nome VARCHAR,
+    email_in VARCHAR,
+    documento VARCHAR,
+    senha VARCHAR,
+    logradouro VARCHAR,
+    numero INTEGER,
+    cep VARCHAR,
+    bairro VARCHAR
+)
+RETURNS pessoa AS $$
+DECLARE
+    codigo_endereco INTEGER;
+    resultado pessoa%ROWTYPE;
+BEGIN
+    IF EXISTS (SELECT 1 FROM pessoa WHERE email = email_in) THEN
+        RAISE EXCEPTION 'Usuário já cadastrado';
+    END IF;
+    --Insere o novo endereço do novo usuário
+    INSERT INTO endereco (logradouro, numero, cep, bairro) 
+    VALUES (
+        logradouro,
+        numero,
+        cep,
+        bairro
+    );
+
+    --Pega o código desse último endereço criado (para colocar no usuário)
+    SELECT codigo INTO codigo_endereco FROM endereco ORDER BY codigo DESC LIMIT 1;
+
+    INSERT INTO pessoa (nome, email, documento, senha, codigo_funcao, codigo_endereco)
+    VALUES (
+        nome,
+        email_in,
+        documento,
+        senha,
+        1,
+        codigo_endereco
+    );
+
+    SELECT * INTO resultado FROM pessoa ORDER BY codigo DESC LIMIT 1;
+
+    RETURN resultado;
+END;
+$$ LANGUAGE plpgsql;

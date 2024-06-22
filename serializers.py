@@ -11,11 +11,29 @@ login_serializer.add_argument(
 
 user_post_serializer: RequestParser = RequestParser()
 user_post_serializer.add_argument(
-    'nome', type=str, required=True, help='Nome não especificado')
+    'nome', type=str, required=True, help='Nome não especificado'
+)
 user_post_serializer.add_argument(
-    'documento', type=str, required=True, help='CPF/CNPJ não especificado')
+    'email', type=str, required=True, help='E-Mail não especificado'
+)
 user_post_serializer.add_argument(
-    'senha', type=str, required=True, help='Senha não especificada')
+    'documento', type=str, required=True, help='CPF/CNPJ não especificado'
+)
+user_post_serializer.add_argument(
+    'senha', type=str, required=True, help='Senha não especificada'
+)
+user_post_serializer.add_argument(
+    'logradouro', type=str, required=True, help="Logradouro não especificado!"
+)
+user_post_serializer.add_argument(
+    'numero', type=int, required=True, help="Número da casa não fornecido!"
+)
+user_post_serializer.add_argument(
+    'cep', type=str, required=True, help='CEP Não informado!'
+)
+user_post_serializer.add_argument(
+    'bairro', type=str, required=True, help='Bairro não informado!'
+)
 
 
 endereco_serializer: RequestParser = RequestParser()

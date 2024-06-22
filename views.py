@@ -5,7 +5,7 @@ import serializers
 from http import HTTPStatus
 from typing import Any, Optional
 from datetime import datetime
-from psycopg2.errors import RaiseException, InsufficientPrivilege
+from psycopg2.errors import RaiseException, InsufficientPrivilege, DuplicateObject
 
 admin_connection = PostgresConnection(user='postgres', password='admin')
 
@@ -82,9 +82,35 @@ class Login(Resource):
 
 
 class User(Resource):
-    @connected
-    def post(self, connection: PostgresConnection):
-        ...
+    def post(self):
+        args: dict = serializers.user_post_serializer.parse_args()
+
+        name = args['nome']
+        email = args['email']
+        documento = args['documento'] \
+            .replace('.', '') \
+            .replace('-', '') \
+            .replace('/', '')
+        senha = args['senha']
+        logradouro = args['logradouro']
+        numero = args['numero']
+        cep = args['cep'].replace('.', '').replace('-', '')
+        bairro = args['bairro']
+
+        try:
+            result = admin_connection.retrieve_one_from_query(f"""SELECT * FROM cadastrar_usuario(
+                '{name}', '{email}', '{documento}', '{senha}', '{logradouro}',
+                {numero}, '{cep}', '{bairro}'
+            )""")
+
+            admin_connection.commit()
+
+            del result['senha']
+
+            return result
+        except RaiseException:
+            admin_connection.rollback()
+            abort(HTTPStatus.BAD_REQUEST, message="Usuário já está cadastrado!")
 
 
 class GrupoList(Resource):

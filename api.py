@@ -5,7 +5,7 @@ import views
 
 app: Flask = Flask(__file__)
 api: Api = Api(app)
-CORS(app, origins='localhost')
+CORS(app, resources={r'/*': {'origins': '*', 'allow-headers': '*'}})
 
 api.add_resource(views.Login, '/login/')
 

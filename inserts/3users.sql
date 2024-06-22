@@ -1,2 +1,2 @@
-INSERT INTO Pessoa(nome, email, documento, senha, codigo_funcao, codigo_endereco) VALUES ('Murilo Hasse', 'murilohasse@gmail.com','00000000000','fds', 1, 1);
-INSERT INTO Pessoa(nome, email, documento, senha, codigo_funcao, codigo_endereco) VALUES ('Matheus Augusto', 'matheusazmerlos@gmail.com','13217494903','123123', 2, 2);
+INSERT INTO Pessoa(nome, email, documento, senha, codigo_endereco) VALUES ('Murilo Hasse', 'murilohasse@gmail.com','00000000000','fds', 1);
+INSERT INTO Pessoa(nome, email, documento, senha, codigo_endereco) VALUES ('Matheus Augusto', 'matheusazmerlos@gmail.com','13217494903','123123', 2);

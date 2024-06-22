@@ -5,7 +5,15 @@ import views
 
 app: Flask = Flask(__file__)
 api: Api = Api(app)
-CORS(app)
+CORS(app, origins='localhost')
+
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', '*')
+    response.headers.add('Access-Control-Allow-Methods', '*')
+
 
 api.add_resource(views.Login, '/login/')
 

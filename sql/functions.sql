@@ -86,13 +86,12 @@ BEGIN
     --Pega o código desse último endereço criado (para colocar no usuário)
     SELECT codigo INTO codigo_endereco FROM endereco ORDER BY codigo DESC LIMIT 1;
 
-    INSERT INTO pessoa (nome, email, documento, senha, codigo_funcao, codigo_endereco)
+    INSERT INTO pessoa (nome, email, documento, senha, codigo_endereco)
     VALUES (
         nome,
         email_in,
         documento,
         senha,
-        1,
         codigo_endereco
     );
 

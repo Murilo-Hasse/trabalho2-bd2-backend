@@ -4,9 +4,11 @@ from flask_restful.reqparse import RequestParser
 
 login_serializer: RequestParser = RequestParser()
 login_serializer.add_argument(
-    'user', type=str, help='Usuário não preenchido', required=True)
+    'user', type=str, help='Usuário não preenchido', required=True
+)
 login_serializer.add_argument(
-    'password', type=str, help='Senha não preenchida', required=True)
+    'password', type=str, help='Senha não preenchida', required=True
+)
 
 
 user_post_serializer: RequestParser = RequestParser()
@@ -38,25 +40,35 @@ user_post_serializer.add_argument(
 produto_post_serializer: RequestParser = RequestParser()
 produto_post_serializer.add_argument('nome', type=str)
 produto_post_serializer.add_argument(
-    'descricao', type=str, help='Nome do item não informado', required=True)
+    'descricao', type=str, help='Nome do item não informado', required=True
+)
 produto_post_serializer.add_argument(
-    'valor', type=float, help='Valor do produto não informado/não é um número válido', required=True)
+    'valor', type=float, help='Valor do produto não informado/não é um número válido', required=True
+)
 produto_post_serializer.add_argument(
-    'quantidade', type=int, help='Quantidade do produto não informada/não é um número válido', required=True)
+    'quantidade', type=int, help='Quantidade do produto não informada/não é um número válido', required=True
+)
 produto_post_serializer.add_argument(
-    'imagem', type=str, help='A imagem não está em base64', required=False, default=None)
+    'imagem', type=str, help='A imagem não está em base64', required=False, default=None
+)
 produto_post_serializer.add_argument(
-    'fornecedor', type=int, help='Fornecedor não informado/não é válido', required=True)
+    'fornecedor', type=int, help='Fornecedor não informado/não é válido', required=True
+)
 produto_post_serializer.add_argument(
-    'grupo', type=int, help='Grupo não informado/não é válido', required=True)
+    'grupo', type=int, help='Grupo não informado/não é válido', required=True
+)
 produto_post_serializer.add_argument(
-    'extensao_imagem', type=str, help='A extensão da imagem não foi fornecida!')
+    'extensao_imagem', type=str, help='A extensão da imagem não foi fornecida!'
+)
 
 compra_serializer: RequestParser = RequestParser()
 compra_serializer.add_argument('quantidade', required=False, type=int)
 compra_serializer.add_argument(
-    'forma_pagamento', required=True, help='forma de pagamento não especificada', type=int)
+    'forma_pagamento', required=True, help='forma de pagamento não especificada', type=int
+)
 compra_serializer.add_argument(
-    'codigo_produto', required=True, help='Produto não especificado', type=int)
+    'codigo_produto', required=True, help='Produto não especificado', type=int
+)
 compra_serializer.add_argument(
-    'usuario', required=True, help='Usuário não especificado', type=int)
+    'usuario', required=True, help='Usuário não especificado', type=int
+)

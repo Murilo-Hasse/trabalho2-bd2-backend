@@ -1,19 +1,11 @@
 DROP TABLE IF EXISTS item CASCADE;
 DROP TABLE IF EXISTS produto CASCADE;
 DROP TABLE IF EXISTS venda CASCADE;
-DROP TABLE IF EXISTS pessoacontato CASCADE;
 DROP TABLE IF EXISTS pessoa CASCADE;
-DROP TABLE IF EXISTS tipocontato CASCADE;
 DROP TABLE IF EXISTS formapagamento CASCADE;
 DROP TABLE IF EXISTS endereco CASCADE;
 DROP TABLE IF EXISTS funcao CASCADE;
 DROP TABLE IF EXISTS grupo CASCADE;
-
-
-CREATE TABLE IF NOT EXISTS funcao (
-    codigo SERIAL PRIMARY KEY,
-    descricao VARCHAR(63) NOT NULL
-);
 
 CREATE TABLE IF NOT EXISTS endereco (
     codigo SERIAL PRIMARY KEY,
@@ -29,30 +21,9 @@ CREATE TABLE IF NOT EXISTS pessoa (
     documento VARCHAR(14) NOT NULL,
     email VARCHAR(127) NOT NULL,
     senha VARCHAR(50) NOT NULL,
-    codigo_funcao INTEGER,
     codigo_endereco INTEGER,
-    FOREIGN KEY (codigo_funcao) REFERENCES funcao(codigo)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
     FOREIGN KEY (codigo_endereco) REFERENCES endereco(codigo)
         ON DELETE SET NULL
-        ON UPDATE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS tipocontato (
-    codigo SERIAL PRIMARY KEY,
-    descricao VARCHAR(63) NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS pessoacontato (
-    codigo_pessoa INTEGER,
-    codigo_tipo INTEGER,
-    PRIMARY KEY (codigo_pessoa, codigo_tipo),
-    FOREIGN KEY (codigo_pessoa) REFERENCES pessoa(codigo)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (codigo_tipo) REFERENCES tipocontato(codigo)
-        ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 

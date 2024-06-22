@@ -29,7 +29,7 @@ def connected(func):
         try:
             func(*args, **kwargs, connection=connection)
         except InsufficientPrivilege:
-            connection.rollback()
+            connection.rollback() if connection is not None else None
             abort(
                 HTTPStatus.FORBIDDEN, message='Você não tem privilégio o suficiente'
             )

@@ -57,6 +57,9 @@ class Login(Resource):
     def post(self):
         args: dict = serializers.login_serializer.parse_args().copy()
 
+        args['user'] = args['user'].encode('utf-8').decode('utf-8')
+        args['password'] = args['password'].encode('utf-8').decode('utf-8')
+
         try:
             pg_connection = PostgresConnection(**args)
         except WrongPasswordError as error:

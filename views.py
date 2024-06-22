@@ -126,19 +126,6 @@ class FormaPagamentoList(Resource):
         return connection.retrieve_many_from_query('SELECT * FROM formapagamento;')
 
 
-class Endereco(Resource):
-    @connected
-    def post(self, connection: PostgresConnection):
-        args = serializers.endereco_serializer.parse_args()
-
-        connection.execute(
-            'INSERT INTO endereco(logradouro, numero, cep, bairro) VALUES (%s, %s, %s, %s);',
-            list(args.values())
-        )
-        connection.commit()
-        return retrieve_last_created('endereco')
-
-
 class ProdutoList(Resource):
     @connected
     def get(self, connection: PostgresConnection):

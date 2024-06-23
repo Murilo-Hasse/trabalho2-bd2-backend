@@ -17,9 +17,11 @@ CREATE POLICY acesso_proprio_venda
 ON venda
 FOR SELECT
 TO grupo_usuario
-USING ((SELECT P.email 
-			FROM venda as V
-			INNER JOIN pessoa as P 
-			ON v.codigo_usuario= p.codigo)  = current_user);
+USING (EXISTS (
+        SELECT 1
+        FROM pessoa AS P
+        WHERE P.codigo = venda.codigo_usuario
+          AND P.email = current_user
+    ));
 
 ALTER TABLE pessoa FORCE ROW LEVEL SECURITY;

@@ -27,7 +27,7 @@ def connected(func):
             )
         connection = connection_pool.get(int(user))
         try:
-            func(*args, **kwargs, connection=connection)
+            return func(*args, **kwargs, connection=connection)
         except InsufficientPrivilege:
             connection.rollback() if connection is not None else None
             abort(
@@ -179,6 +179,7 @@ class ProdutoList(Resource):
         return retrieve_last_created('produto', connection=connection)
 
 
+
 class Produtos(Resource):
     @connected
     def get(self, produto_id, connection: PostgresConnection):
@@ -191,7 +192,7 @@ class Produtos(Resource):
             produto.quantidade AS quantidade,
             produto.imagem AS imagem,
             grupo.descricao AS grupo,
-            pessoa.codigo AS codigo_fornecedor
+            pessoa.codigo AS codigo_fornecedor,
             pessoa.nome AS fornecedor
         FROM
             produto

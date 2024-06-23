@@ -10,10 +10,14 @@ GRANT SELECT ON TABLE venda TO grupo_usuario;
 --Dar permissão a consultar na tabela produto. Acesso total
 GRANT SELECT ON TABLE produto TO grupo_usuario;
 
+--Dar permissão a consultar na tabela grupo. Acesso total
 GRANT SELECT ON TABLE grupo TO grupo_usuario;
 
+--Dar permissão a consultar na tabela formapagamento. Acesso total
 GRANT SELECT ON TABLE formapagamento TO grupo_usuario;
 
+--Dar permissão para inserir na tabela produto. Acesso total
 GRANT INSERT ON TABLE  produto TO grupo_usuario;
 
+--Dar permissão para inserir na tabela venda. Acesso total
 GRANT INSERT ON TABLE  venda TO grupo_usuario;

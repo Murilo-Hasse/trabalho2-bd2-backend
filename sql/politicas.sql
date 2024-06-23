@@ -10,18 +10,4 @@ USING (email  = current_user);
 
 ALTER TABLE pessoa FORCE ROW LEVEL SECURITY;
 -------------------------------------------------
---Habilita o controle de acesso na tabela
-ALTER TABLE venda ENABLE ROW LEVEL SECURITY;
- 
-CREATE POLICY acesso_proprio_venda
-ON venda
-FOR SELECT
-TO grupo_usuario
-USING (EXISTS (
-        SELECT 1
-        FROM pessoa AS P
-        WHERE P.codigo = venda.codigo_usuario
-          AND P.email = current_user
-    ));
 
-ALTER TABLE pessoa FORCE ROW LEVEL SECURITY;

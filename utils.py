@@ -45,10 +45,7 @@ class PostgresConnection:
             self.__connection.commit()
             self.__connection.close()
             self.__cursor.close()
-
-    def execute(self, sql_command: str, *args) -> None:
-        self.__cursor.execute(sql_command, *args)
-
+        
     def commit(self) -> None:
         self.__connection.commit()
 

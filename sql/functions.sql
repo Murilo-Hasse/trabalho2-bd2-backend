@@ -56,6 +56,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 CREATE OR REPLACE FUNCTION cadastrar_usuario(
     nome VARCHAR,
     email_in VARCHAR,

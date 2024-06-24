@@ -52,13 +52,8 @@ def retrieve_last_created(table_name: str, connection: PostgresConnection) -> di
 
 
 class Login(Resource):
-    """Classe que contém o método POST para fazer login na aplicação, ela funciona pegando o usuário NO BANCO (Usuário da aplicação = Usuário no banco)"""
-
     def post(self):
-        args: dict = serializers.login_serializer.parse_args().copy()
-
-        args['user'] = args['user'].encode('utf-8').decode('utf-8')
-        args['password'] = args['password'].encode('utf-8').decode('utf-8')
+        args: dict = serializers.login_serializer.parse_args()
 
         try:
             pg_connection = PostgresConnection(**args)
@@ -118,7 +113,6 @@ class Cadastro(Resource):
 
 
 class GrupoList(Resource):
-    """Classe responsável pelos métodos relacionados aos grupos, neste caso só tem o método GET, o qual irá retornar uma lista contendo todos os grupos"""
     @connected
     def get(self, connection: PostgresConnection):
         return connection.retrieve_many_from_query('SELECT * FROM grupo;')
@@ -209,13 +203,6 @@ class Produtos(Resource):
 class Compra(Resource):
     @connected
     def post(self, connection: PostgresConnection):
-        """
-        Método post de registro de vendas, ele começa pegando os argumentos do serializer,
-        após isso, ele pega o valor do produto via banco, e também a quantidade que está em estoque,
-        para daí checar se é maior que a da venda, se for, passa, se não for, retorna código 400,
-        depois disso ele registra a venda, e faz um update na quantidade do item no banco
-        para dai retornar o JSON resposa.
-        """
         args = serializers.compra_serializer.parse_args()
 
         quantidade_a_ser_vendido = args['quantidade'] if args['quantidade'] else 1
@@ -230,6 +217,7 @@ class Compra(Resource):
                     {args['forma_pagamento']}
                 )'''
             )
+            connection.commit()
         except RaiseException:
             connection.rollback()
             abort(

@@ -270,7 +270,6 @@ class PessoaProdutos(Resource):
         )
         
 class Pesquisa(Resource):
-    """Classe destinada a mostrar todos os produtos que uma pessoa está vendendo"""
     @connected
     def get(self, connection: PostgresConnection, query: str):
         return connection.retrieve_many_from_query(

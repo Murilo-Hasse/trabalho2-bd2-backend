@@ -12,6 +12,10 @@ DECLARE
     valor_total_compra FLOAT;
     resultado venda%ROWTYPE;
 BEGIN
+    IF NOT EXISTS (SELECT 1 FROM produto WHERE codigo = codigo_produto) THEN
+        RAISE EXCEPTION 'Produto não existe!';
+    END IF;
+
     --Pega a quantidade em estoque e joga na variável
     SELECT 
         quantidade 
@@ -23,6 +27,7 @@ BEGIN
     --Se for maior, então ele lança uma exception (ROLLBACK)
     IF quantidade_a_vender > quantidade_estoque THEN
         RAISE EXCEPTION 'A quantidade em estoque desse produto é menor que a quantidade a ser comprada!';
+        RETURN NULL;
     END IF;
 
     --Pega o valor do produto individual e depois calcula o valor total com base na quantidade

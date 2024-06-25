@@ -149,30 +149,6 @@ class ProdutoList(Resource):
         """
         return connection.retrieve_many_from_query(query)
 
-    @connected
-    def post(self, connection: PostgresConnection):
-        args = serializers.produto_post_serializer.parse_args()
-
-        img_b64 = args['imagem']
-        img_extension = args['extensao_imagem']
-
-        img_url = decode_and_upload_to_dropbox(
-            img_b64, args['descricao'], img_extension
-        )
-
-        del args['extensao_imagem']
-
-        args['imagem'] = img_url
-        print(args)
-
-        connection.execute(
-            'INSERT INTO produto(nome, descricao, valor, quantidade, imagem, grupo, codigo_fornecedor) VALUES (%s ,%s, %s, %s, %s, %s, %s)',
-            list(args.values())
-        )
-        connection.commit()
-        return retrieve_last_created('produto', connection=connection)
-
-
 
 class Produtos(Resource):
     @connected
@@ -290,5 +266,34 @@ class PessoaProdutos(Resource):
                 ON produto.codigo_fornecedor = fornecedor.codigo
             WHERE
                 produto.codigo_fornecedor = {funcionario_id};
+            """
+        )
+        
+class Pesquisa(Resource):
+    """Classe destinada a mostrar todos os produtos que uma pessoa está vendendo"""
+    @connected
+    def get(self, connection: PostgresConnection, query: str):
+        return connection.retrieve_many_from_query(
+            f"""
+            SELECT
+                produto.codigo AS codigo,
+                produto.nome AS nome,
+                produto.descricao AS descricao,
+                produto.valor AS valor,
+                produto.quantidade AS quantidade,
+                produto.imagem AS imagem,
+                grupo.descricao AS grupo,
+                fornecedor.codigo AS codigo_fornecedor,
+                fornecedor.nome AS fornecedor
+            FROM
+                produto
+            INNER JOIN grupo
+                ON produto.grupo = grupo.codigo
+            INNER JOIN fornecedor
+                ON produto.codigo_fornecedor = fornecedor.codigo
+            WHERE
+                produto.quantidade > 0
+            AND
+                LOWER(produto.nome) LIKE LOWER('%{query}%');
             """
         )

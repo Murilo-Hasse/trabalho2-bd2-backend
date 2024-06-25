@@ -232,6 +232,8 @@ class ComprasList(Resource):
             ON venda.codigo_produto = produto.codigo
             WHERE
                 codigo_usuario = {usuario_id}
+            ORDER BY
+                venda.horario DESC;
             """
         )
         for hasmap in response:

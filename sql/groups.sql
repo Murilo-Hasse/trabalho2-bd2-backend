@@ -24,3 +24,6 @@ GRANT USAGE, UPDATE ON SEQUENCE produto_codigo_seq TO grupo_usuario;
 --Dar permissão para inserir na tabela venda. Acesso total
 GRANT INSERT ON TABLE  venda TO grupo_usuario;
 GRANT USAGE, UPDATE ON SEQUENCE venda_codigo_seq TO grupo_usuario;
+
+--Dar permissão de select na view fornecedor, usada para listar informações de produtos;
+GRANT SELECT ON fornecedor TO grupo_usuario;

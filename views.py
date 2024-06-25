@@ -5,7 +5,7 @@ import serializers
 from http import HTTPStatus
 from typing import Any
 from datetime import datetime
-from psycopg2.errors import RaiseException, InsufficientPrivilege
+from psycopg2.errors import RaiseException, InsufficientPrivilege, DuplicateObject
 
 admin_connection = PostgresConnection(user='postgres', password='admin')
 
@@ -107,7 +107,7 @@ class Cadastro(Resource):
             del result['senha']
 
             return result
-        except RaiseException:
+        except (RaiseException, DuplicateObject):
             admin_connection.rollback()
             abort(HTTPStatus.BAD_REQUEST, message="Usuário já está cadastrado!")
 
@@ -136,14 +136,14 @@ class ProdutoList(Resource):
             produto.quantidade AS quantidade,
             produto.imagem AS imagem,
             grupo.descricao AS grupo,
-            pessoa.codigo AS codigo_fornecedor,
-            pessoa.nome AS fornecedor
+            fornecedor.codigo AS codigo_fornecedor,
+            fornecedor.nome AS fornecedor
         FROM
             produto
         INNER JOIN grupo
             ON produto.grupo = grupo.codigo
-        INNER JOIN pessoa
-            ON produto.codigo_fornecedor = pessoa.codigo
+        INNER JOIN fornecedor
+            ON produto.codigo_fornecedor = fornecedor.codigo
         WHERE produto.quantidade > 0
         ORDER BY produto.codigo ASC;
         """
@@ -186,14 +186,14 @@ class Produtos(Resource):
             produto.quantidade AS quantidade,
             produto.imagem AS imagem,
             grupo.descricao AS grupo,
-            pessoa.codigo AS codigo_fornecedor,
-            pessoa.nome AS fornecedor
+            fornecedor.codigo AS codigo_fornecedor,
+            fornecedor.nome AS fornecedor
         FROM
             produto
         INNER JOIN grupo
             ON produto.grupo = grupo.codigo
-        INNER JOIN pessoa
-            ON produto.codigo_fornecedor = pessoa.codigo
+        INNER JOIN fornecedor
+            ON produto.codigo_fornecedor = fornecedor.codigo
         WHERE
             produto.codigo = {produto_id};
         """
@@ -280,14 +280,14 @@ class PessoaProdutos(Resource):
                 produto.quantidade AS quantidade,
                 produto.imagem AS imagem,
                 grupo.descricao AS grupo,
-                pessoa.codigo AS codigo_fornecedor,
-                pessoa.nome AS fornecedor
+                fornecedor.codigo AS codigo_fornecedor,
+                fornecedor.nome AS fornecedor
             FROM
                 produto
             INNER JOIN grupo
                 ON produto.grupo = grupo.codigo
-            INNER JOIN pessoa
-                ON produto.codigo_fornecedor = pessoa.codigo
+            INNER JOIN fornecedor
+                ON produto.codigo_fornecedor = fornecedor.codigo
             WHERE
                 produto.codigo_fornecedor = {funcionario_id};
             """

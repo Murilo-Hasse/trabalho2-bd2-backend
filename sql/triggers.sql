@@ -13,7 +13,7 @@ BEGIN
     email := quote_ident(last_user.email);
     passwd := last_user.senha;
 
-    EXECUTE 'CREATE USER ' || email || ' WITH PASSWORD ' || quote_literal(passwd);
+	EXECUTE 'CREATE USER ' || email || ' WITH PASSWORD ' || quote_literal(passwd);
 	EXECUTE 'ALTER GROUP grupo_usuario ADD USER ' || email;
 
     RETURN NEW;
